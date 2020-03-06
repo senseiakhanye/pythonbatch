@@ -25,10 +25,10 @@ for i, j in df.iterrows():
     # info = j["info"]
     # instruction = j["instruction"]
     columns = list(j)
-    taskList = {"c2JSONObject": TRUE, "data" : {"title": columns[1], "info": columns[2], "instruction": columns[3], "summary": columns[4], "reviews": []}}
+    taskList = {"c2JSONObject": TRUE, "data" : {"title": columns[2], "info": columns[3], "instruction": columns[4], "summary": columns[5], "subject": columns[1], "reviews": []}}
     temp = {}
-    for x in range(5, len(columns)):
-        if x % 2 != 0:
+    for x in range(6, len(columns)):
+        if x % 2 == 0:
             if (x < len(columns) - 1):
                 temp = {"point" : columns[x], "description": columns[x + 1]}
                 taskList["data"]["reviews"].append(temp)
