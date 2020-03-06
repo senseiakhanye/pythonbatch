@@ -1,7 +1,10 @@
 import pandas as pd
+import json
+import shutil
 from tkinter import filedialog
 from tkinter import *
 from pandas import ExcelFile
+
 
 # top = Tk()
 # Code to add widgets will go here...
@@ -22,18 +25,18 @@ for i, j in df.iterrows():
     # info = j["info"]
     # instruction = j["instruction"]
     columns = list(j)
-    taskList = {"c2JSONObject": TRUE, "data" : {"title": columns[0], "info": columns[1], "instruction": columns[2], "reviews": []}}
-    n = 3
+    taskList = {"c2JSONObject": TRUE, "data" : {"title": columns[1], "info": columns[2], "instruction": columns[3], "summary": columns[4], "reviews": []}}
     temp = {}
-    for x in range(3, len(columns)):
-        if x % 3 == 0:
-            temp = {"point" : columns[x], "description": columns[x + 1]}
-            taskList["data"]["reviews"].append(temp)
-        with open("C:/Users/User/Desktop/ideaData.json", mode="w") as tempFile:
-            tempFile.write(str(taskList))
-    # print(title + " " + info + " " + instruction)
+    for x in range(5, len(columns)):
+        if x % 2 != 0:
+            if (x < len(columns) - 1):
+                temp = {"point" : columns[x], "description": columns[x + 1]}
+                taskList["data"]["reviews"].append(temp)
+    with open("C:/Users/User/Desktop/template/ideaData.json", mode="w") as tempFile:
+        tempFile.write(json.dumps(taskList, ensure_ascii=False))
+    filename = columns[0]
+    shutil.copytree("c:/Users/User/Desktop/template", "c:/Users/User/Desktop/templates/" + filename)
     print(taskList)
-    
     print()
 
 # top.mainloop()
