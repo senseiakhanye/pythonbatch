@@ -20,31 +20,45 @@ def generateTrueFalse(columns, exportFolder):
         if (x + 1) % 2 == 0:
             if (pd.isna(columns[x]) == False):
                 if (x < len(columns) - 1):
-                    temp = {"question" : columns[x], "answer": round(columns[x + 1])}
+                    temp = {"question" : columns[x].replace('’', '\''), "answer": round(columns[x + 1])}
                     taskList["data"]["questions"].append(temp)
     currentFolder = os.getcwd()
     with open(currentFolder + "/truefalse/ideaData.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
     filename = columns[0]
     exportname = exportFolder + "/" + filename
-    print(exportname)
     shutil.copytree(currentFolder + "/truefalse", exportname)
 
 def generatePreview(columns, exportFolder):
-    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[4], "instruction": columns[5], "summary": columns[6], "subject": columns[2], "reviews": []}}
+    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[3].replace('’', '\''), "instruction": columns[4].replace('’', '\''), "summary": columns[6].replace('’', '\''), "summary-heading": columns[5].replace('’', '\''),"subject": columns[2], "reviews": []}}
     temp = {}
     for x in range(7, len(columns)):
         if (x  + 1) % 2 == 0:
-            if (pd.isna(columns[x]) == False):
+            if (pd.isna(columns[x]) == False and columns[x] and len(columns[x].strip()) > 0):
                 if (x < len(columns) - 1):
-                    temp = {"point" : columns[x], "description": columns[x + 1]}
+                    temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 1].replace('’', '\'')}
                     taskList["data"]["reviews"].append(temp)
     currentFolder = os.getcwd()
     with open(currentFolder +  "/review/ideaData.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
     filename = columns[0]
     exportname = exportFolder + "/" + filename
-    print(exportname)
+    shutil.copytree(currentFolder + "/review", exportname)
+
+def generateLearningGoal(columns, exportFolder):
+    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[3].replace('’', '\''), "instruction": columns[4].replace('’', '\''), "summary": columns[6].replace('’', '\''), "summary-heading": columns[5].replace('’', '\''),"subject": columns[2], "goals": []}}
+    temp = {}
+    for x in range(7, len(columns)):
+        if (x  + 1) % 2 == 0:
+            if (pd.isna(columns[x]) == False and columns[x] and len(columns[x].strip()) > 0):
+                if (x < len(columns) - 1):
+                    temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 1].replace('’', '\'')}
+                    taskList["data"]["reviews"].append(temp)
+    currentFolder = os.getcwd()
+    with open(currentFolder +  "/review/ideaData.json", mode="w") as tempFile:
+        tempFile.write(json.dumps(taskList, ensure_ascii=False))
+    filename = columns[0]
+    exportname = exportFolder + "/" + filename
     shutil.copytree(currentFolder + "/review", exportname)
 
 def readFile (fileName, exportFolder):
@@ -52,10 +66,14 @@ def readFile (fileName, exportFolder):
     df = pd.read_excel(fileName, sheet_name="Sheet1")
     for i, j in df.iterrows():
         columns = list(j)
-        if (columns[1].lower() == "review"):
-            generatePreview(columns, exportFolder)
-        elif (columns[1].lower() == "true or false"):
-            generateTrueFalse(columns, exportFolder)
+        if (pd.isna(columns[1]) == False):
+            if (columns[1].lower() == "review"):
+                generatePreview(columns, exportFolder)
+            elif (columns[1].lower() == "true or false"):
+                generateTrueFalse(columns, exportFolder)
+            elif (columns[1].lower() == "learning goal"):
+                generateLearningGoal(columns, exportFolder)
+
         
 def getExcel ():
     import_file_path = filedialog.askopenfilename()
@@ -73,7 +91,7 @@ def publish():
 
 def folderToExport():
     export_foler = filedialog.askdirectory()
-    if (export_foler):        
+    if (export_foler):
         global exportFolder
         exportFolder = export_foler
     
