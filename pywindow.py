@@ -46,20 +46,19 @@ def generatePreview(columns, exportFolder):
     shutil.copytree(currentFolder + "/review", exportname)
 
 def generateLearningGoal(columns, exportFolder):
-    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[3].replace('’', '\''), "instruction": columns[4].replace('’', '\''), "summary": columns[6].replace('’', '\''), "summary-heading": columns[5].replace('’', '\''),"subject": columns[2], "goals": []}}
+    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "instruction": columns[4].replace('’', '\''), "subject": columns[2], "goals": []}}
     temp = {}
-    for x in range(7, len(columns)):
-        if (x  + 1) % 2 == 0:
-            if (pd.isna(columns[x]) == False and columns[x] and len(columns[x].strip()) > 0):
-                if (x < len(columns) - 1):
-                    temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 1].replace('’', '\'')}
-                    taskList["data"]["reviews"].append(temp)
+    for x in range(5, len(columns), 3):
+        if (pd.isna(columns[x]) == False and columns[x] and len(columns[x].strip()) > 0):
+            if (x < len(columns) - 1):
+                temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 2].replace('’', '\''), "heading": columns[x + 1].replace('’', "heading")}
+                taskList["data"]["goals"].append(temp)
     currentFolder = os.getcwd()
-    with open(currentFolder +  "/review/ideaData.json", mode="w") as tempFile:
+    with open(currentFolder +  "/learninggoal/ideaData.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
     filename = columns[0]
     exportname = exportFolder + "/" + filename
-    shutil.copytree(currentFolder + "/review", exportname)
+    shutil.copytree(currentFolder + "/learninggoal", exportname)
 
 def readFile (fileName, exportFolder):
     global globalFilename
