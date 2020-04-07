@@ -13,6 +13,21 @@ canvas1.pack()
 globalFilename = ""
 exportFolder = ""
 
+def genrateMCQ(columns, exportFolder):
+    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "startScreen": columns[4], "instruction": columns[5], "subject": columns[2], "questions": []}}
+    temp = {}
+    for x in range(6, len(columns), 5):
+        if (pd.isna(columns[x]) == False):
+            if (x < len(columns) - 4):
+                temp = {"question" : columns[x].replace('’', '\''), "option1": str(columns[x + 1]), "option2": str(columns[x + 2]), "option3": str(columns[x + 3]), "option4": str(columns[x + 4])}
+                taskList["data"]["questions"].append(temp)
+    currentFolder = os.getcwd()
+    with open(currentFolder + "/mcq/ideadata.json", mode="w") as tempFile:
+        tempFile.write(json.dumps(taskList, ensure_ascii=False))
+    filename = columns[0]
+    exportname = exportFolder + "/" + filename
+    shutil.copytree(currentFolder + "/mcq", exportname)
+
 def generateTrueFalse(columns, exportFolder):
     taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[4], "instruction": columns[5], "summary": columns[6], "subject": columns[2], "questions": []}}
     temp = {}
@@ -23,23 +38,23 @@ def generateTrueFalse(columns, exportFolder):
                     temp = {"question" : columns[x].replace('’', '\''), "answer": round(columns[x + 1])}
                     taskList["data"]["questions"].append(temp)
     currentFolder = os.getcwd()
-    with open(currentFolder + "/truefalse/ideaData.json", mode="w") as tempFile:
+    with open(currentFolder + "/truefalse/ideadata.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
     filename = columns[0]
     exportname = exportFolder + "/" + filename
     shutil.copytree(currentFolder + "/truefalse", exportname)
 
 def generatePreview(columns, exportFolder):
-    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[3].replace('’', '\''), "instruction": columns[4].replace('’', '\''), "summary": columns[6].replace('’', '\''), "summary-heading": columns[5].replace('’', '\''),"subject": columns[2], "reviews": []}}
+    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[3].replace('’', '\''), "instruction": columns[4].replace('’', '\''), "summary": columns[6].replace('’', '\'').replace('\n\n','`'), "summary-heading": columns[5].replace('’', '\''),"subject": columns[2], "reviews": []}}
     temp = {}
     for x in range(7, len(columns)):
         if (x  + 1) % 2 == 0:
             if (pd.isna(columns[x]) == False and columns[x] and len(columns[x].strip()) > 0):
                 if (x < len(columns) - 1):
-                    temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 1].replace('’', '\'')}
+                    temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 1].replace('’', '\'').replace('\n\n','`')}
                     taskList["data"]["reviews"].append(temp)
     currentFolder = os.getcwd()
-    with open(currentFolder +  "/review/ideaData.json", mode="w") as tempFile:
+    with open(currentFolder +  "/review/ideadata.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
     filename = columns[0]
     exportname = exportFolder + "/" + filename
@@ -48,21 +63,29 @@ def generatePreview(columns, exportFolder):
 def generateLearningGoal(columns, exportFolder):
     taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "instruction": columns[4].replace('’', '\''), "subject": columns[2], "goals": []}}
     temp = {}
+    learningGoals = 0
     for x in range(5, len(columns), 3):
         if (pd.isna(columns[x]) == False and columns[x] and len(columns[x].strip()) > 0):
             if (x < len(columns) - 1):
-                temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 2].replace('’', '\''), "heading": columns[x + 1].replace('’', "heading")}
+                temp = {"point" : columns[x].replace('’', '\'').replace("\n\n","\n"), "description": columns[x + 2].replace('’', '\'').replace("\n\n","\n"), "heading": columns[x + 1].replace('’', "heading").replace("\n\n","\n")}
                 taskList["data"]["goals"].append(temp)
+                learningGoals += 1
     currentFolder = os.getcwd()
-    with open(currentFolder +  "/learninggoal/ideaData.json", mode="w") as tempFile:
-        tempFile.write(json.dumps(taskList, ensure_ascii=False))
     filename = columns[0]
-    exportname = exportFolder + "/" + filename
-    shutil.copytree(currentFolder + "/learninggoal", exportname)
+    os.makedirs(exportFolder + "/" + filename)
+    for lg in range(-1, learningGoals):        
+        newList = taskList.copy()
+        newList["data"]["active"] = str(lg)
+        exportname = exportFolder + "/" + filename + "/" + filename + "_" + str(lg + 1)
+        shutil.copytree(currentFolder + "/learninggoal", exportname)
+        with open(exportname + "/ideadata.json", mode="w") as tempFile:
+            tempFile.write(json.dumps(newList, ensure_ascii=False))
+        outputFilename = exportname
+        shutil.make_archive(outputFilename, 'zip', exportname + "/")
 
 def readFile (fileName, exportFolder):
     global globalFilename
-    df = pd.read_excel(fileName, sheet_name="Sheet1")
+    df = pd.read_excel(fileName, sheet_name="Review")
     for i, j in df.iterrows():
         columns = list(j)
         if (pd.isna(columns[1]) == False):
@@ -72,6 +95,8 @@ def readFile (fileName, exportFolder):
                 generateTrueFalse(columns, exportFolder)
             elif (columns[1].lower() == "learning goal"):
                 generateLearningGoal(columns, exportFolder)
+            elif (columns[1].lower() == "mcq"):
+                genrateMCQ(columns, exportFolder)
 
         
 def getExcel ():

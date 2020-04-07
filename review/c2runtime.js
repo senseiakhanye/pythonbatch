@@ -25064,6 +25064,15 @@ cr.plugins_.Tracking = function(runtime)
 		}
 		track.setAnswer(isCorrect, givenIndex, givenValue, correctValue);
 	};
+	Acts.prototype.addAnswer = function (question ,isCorrect, givenIndex, givenValue, correctValue)
+	{
+		if(track == undefined)
+		{
+			alert("You forgot to the Activity name!");
+			return;
+		}
+		track.addAnswer(question, isCorrect, givenIndex, givenValue, correctValue);
+	};
 	Acts.prototype.finishInterActive = function ()
 	{
 		if(track == undefined)
@@ -26978,28 +26987,17 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.AJAX,
 	cr.plugins_.Arr,
 	cr.plugins_.Audio,
-	cr.plugins_.Dictionary,
-	cr.plugins_.Browser,
 	cr.plugins_.creator,
-<<<<<<< HEAD
+	cr.plugins_.Browser,
+	cr.plugins_.Dictionary,
 	cr.plugins_.JSONObject,
 	cr.plugins_.Function,
-	cr.plugins_.TextBox,
-	cr.plugins_.Tracking,
 	cr.plugins_.Touch,
 	cr.plugins_.Text,
-	cr.plugins_.Sprite,
-	cr.plugins_.Spritefont2,
-=======
-	cr.plugins_.Function,
-	cr.plugins_.JSONObject,
-	cr.plugins_.Spritefont2,
-	cr.plugins_.Touch,
-	cr.plugins_.TextBox,
-	cr.plugins_.Sprite,
 	cr.plugins_.Tracking,
-	cr.plugins_.Text,
->>>>>>> origin/master
+	cr.plugins_.TextBox,
+	cr.plugins_.Spritefont2,
+	cr.plugins_.Sprite,
 	cr.behaviors.lunarray_LiteTween,
 	cr.behaviors.Pin,
 	cr.behaviors.Fade,
@@ -27014,7 +27012,6 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Function.prototype.cnds.OnFunction,
 	cr.system_object.prototype.exps.tokencount,
 	cr.plugins_.JSONObject.prototype.exps.Get,
-	cr.system_object.prototype.exps.newline,
 	cr.system_object.prototype.acts.AddVar,
 	cr.plugins_.Sprite.prototype.acts.SetSize,
 	cr.plugins_.Sprite.prototype.acts.SetVisible,
@@ -27023,17 +27020,24 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Text.prototype.acts.SetText,
 	cr.plugins_.Text.prototype.acts.SetX,
 	cr.system_object.prototype.cnds.For,
-	cr.system_object.prototype.acts.CreateObject,
-	cr.behaviors.Fade.prototype.acts.StartFade,
+	cr.system_object.prototype.cnds.Compare,
+	cr.system_object.prototype.exps.len,
+	cr.system_object.prototype.exps.trim,
 	cr.system_object.prototype.exps.tokenat,
 	cr.system_object.prototype.exps.loopindex,
+	cr.system_object.prototype.acts.CreateObject,
+	cr.behaviors.Fade.prototype.acts.StartFade,
 	cr.plugins_.Text.prototype.acts.SetHeight,
 	cr.plugins_.Text.prototype.exps.Height,
 	cr.system_object.prototype.exps.floor,
-	cr.system_object.prototype.exps.len,
+	cr.plugins_.Text.prototype.exps.Text,
+	cr.system_object.prototype.exps.newline,
 	cr.plugins_.Text.prototype.exps.X,
 	cr.plugins_.Sprite.prototype.exps.Width,
 	cr.plugins_.Text.prototype.exps.Y,
+	cr.plugins_.Browser.prototype.acts.ExecJs,
+	cr.system_object.prototype.exps.str,
+	cr.system_object.prototype.cnds.TriggerOnce,
 	cr.system_object.prototype.cnds.CompareVar,
 	cr.system_object.prototype.cnds.ForEach,
 	cr.plugins_.Sprite.prototype.cnds.IsBoolInstanceVarSet,
@@ -27051,8 +27055,6 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Arr.prototype.cnds.ArrForEach,
 	cr.plugins_.Arr.prototype.exps.At,
 	cr.plugins_.Text.prototype.acts.SetInstanceVar,
-	cr.plugins_.Text.prototype.exps.Text,
-	cr.system_object.prototype.cnds.TriggerOnce,
 	cr.system_object.prototype.acts.Wait,
 	cr.plugins_.AJAX.prototype.cnds.OnComplete,
 	cr.plugins_.JSONObject.prototype.acts.JSONLoad,
