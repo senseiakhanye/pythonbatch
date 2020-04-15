@@ -3,30 +3,75 @@ import json
 import shutil
 import tkinter as tk
 import os
+import sys
 from tkinter import filedialog
 from pandas import ExcelFile
+from tkinter import ttk
+from tkinter import messagebox
 
 
 root = tk.Tk()
 canvas1 = tk.Canvas(root, width = 300, height = 300, bg = 'lightsteelblue')
+
 canvas1.pack()
 globalFilename = ""
 exportFolder = ""
 
-def genrateMCQ(columns, exportFolder):
-    taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "startScreen": columns[4], "instruction": columns[5], "subject": columns[2], "questions": []}}
+def getCorrrectFilename(folder, filename):
+    x = 0
+    tempfilename = filename
+    while (os.path.isdir(os.path.join(folder, tempfilename)) == True):
+        x += 1
+        tempfilename = filename + "_" + str(x)
+    return tempfilename
+
+def combineOption(corrVal, textVal):
+    return str(corrVal) + "|" + str(textVal)
+
+def getDataDirectory():
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.getcwd()
+    print(base_path)
+    return base_path
+
+def genrateMCQ(df, exportFolder):
+    taskList = {"c2JSONObject": 1, "data" : {}}
     temp = {}
-    for x in range(6, len(columns), 5):
-        if (pd.isna(columns[x]) == False):
-            if (x < len(columns) - 4):
-                temp = {"question" : columns[x].replace('’', '\''), "option1": str(columns[x + 1]), "option2": str(columns[x + 2]), "option3": str(columns[x + 3]), "option4": str(columns[x + 4])}
+    currentFolder = getDataDirectory()
+    filename = getCorrrectFilename(exportFolder, "testfilename")
+    for i, j in df.iterrows():
+        if (i == 1):
+            columns = list(j)
+            filename = getCorrrectFilename(exportFolder, columns[0])
+            taskList["data"] = {"title": columns[6], "startScreen": columns[10], "instruction": columns[8], "subject": columns[4], "questions": []}
+        elif (i >= 3):
+            columns = list(j)
+            if (pd.isna(columns[0]) == False):
+                temp = {"question" : columns[1].replace('’', '\''), "option1": combineOption(columns[2], columns[3]), "option2": combineOption(columns[4], columns[5]), "option3":combineOption(columns[6], columns[7]), "option4": combineOption(columns[8], columns[9])}
                 taskList["data"]["questions"].append(temp)
-    currentFolder = os.getcwd()
+    
     with open(currentFolder + "/mcq/ideadata.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
-    filename = columns[0]
     exportname = exportFolder + "/" + filename
     shutil.copytree(currentFolder + "/mcq", exportname)
+    messagebox.showinfo("Generated", "Generated MCQ Assessments: (" + os.path.join(exportFolder, filename) + ")")
+
+# def genrateMCQ(columns, exportFolder):
+#     taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "startScreen": columns[4], "instruction": columns[5], "subject": columns[2], "questions": []}}
+#     temp = {}
+#     for x in range(6, len(columns), 5):
+#         if (pd.isna(columns[x]) == False):
+#             if (x < len(columns) - 4):
+#                 temp = {"question" : columns[x].replace('’', '\''), "option1": str(columns[x + 1]), "option2": str(columns[x + 2]), "option3": str(columns[x + 3]), "option4": str(columns[x + 4])}
+#                 taskList["data"]["questions"].append(temp)
+#     currentFolder = os.getcwd()
+#     with open(currentFolder + "/mcq/ideadata.json", mode="w") as tempFile:
+#         tempFile.write(json.dumps(taskList, ensure_ascii=False))
+#     filename = columns[0]
+#     exportname = exportFolder + "/" + filename
+#     shutil.copytree(currentFolder + "/mcq", exportname)
 
 def generateTrueFalse(columns, exportFolder):
     taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[4], "instruction": columns[5], "summary": columns[6], "subject": columns[2], "questions": []}}
@@ -37,12 +82,14 @@ def generateTrueFalse(columns, exportFolder):
                 if (x < len(columns) - 1):
                     temp = {"question" : columns[x].replace('’', '\''), "answer": round(columns[x + 1])}
                     taskList["data"]["questions"].append(temp)
-    currentFolder = os.getcwd()
+    currentFolder = getDataDirectory()
     with open(currentFolder + "/truefalse/ideadata.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
-    filename = columns[0]
+    # filename = columns[0]
+    filename = getCorrrectFilename(exportFolder, columns[0])
     exportname = exportFolder + "/" + filename
     shutil.copytree(currentFolder + "/truefalse", exportname)
+    messagebox.showinfo("Generated", "Generated True or False assets : (" + os.path.join(exportFolder, filename) + ")")
 
 def generatePreview(columns, exportFolder):
     taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "info": columns[3].replace('’', '\''), "instruction": columns[4].replace('’', '\''), "summary": columns[6].replace('’', '\'').replace('\n\n','`'), "summary-heading": columns[5].replace('’', '\''),"subject": columns[2], "reviews": []}}
@@ -53,12 +100,14 @@ def generatePreview(columns, exportFolder):
                 if (x < len(columns) - 1):
                     temp = {"point" : columns[x].replace('’', '\''), "description": columns[x + 1].replace('’', '\'').replace('\n\n','`')}
                     taskList["data"]["reviews"].append(temp)
-    currentFolder = os.getcwd()
+    currentFolder = getDataDirectory()
     with open(currentFolder +  "/review/ideadata.json", mode="w") as tempFile:
         tempFile.write(json.dumps(taskList, ensure_ascii=False))
-    filename = columns[0]
+    # filename = columns[0]
+    filename = getCorrrectFilename(exportFolder, columns[0])
     exportname = exportFolder + "/" + filename
     shutil.copytree(currentFolder + "/review", exportname)
+    messagebox.showinfo("Generated", "Generated reviews : (" + os.path.join(exportFolder, filename) + ")")
 
 def generateLearningGoal(columns, exportFolder):
     taskList = {"c2JSONObject": 1, "data" : {"title": columns[3], "instruction": columns[4].replace('’', '\''), "subject": columns[2], "goals": []}}
@@ -70,8 +119,9 @@ def generateLearningGoal(columns, exportFolder):
                 temp = {"point" : columns[x].replace('’', '\'').replace("\n\n","\n"), "description": columns[x + 2].replace('’', '\'').replace("\n\n","\n"), "heading": columns[x + 1].replace('’', "heading").replace("\n\n","\n")}
                 taskList["data"]["goals"].append(temp)
                 learningGoals += 1
-    currentFolder = os.getcwd()
-    filename = columns[0]
+    currentFolder = getDataDirectory()
+    # filename = columns[0]
+    filename = getCorrrectFilename(exportFolder, columns[0])
     os.makedirs(exportFolder + "/" + filename)
     for lg in range(-1, learningGoals):        
         newList = taskList.copy()
@@ -82,21 +132,32 @@ def generateLearningGoal(columns, exportFolder):
             tempFile.write(json.dumps(newList, ensure_ascii=False))
         outputFilename = exportname
         shutil.make_archive(outputFilename, 'zip', exportname + "/")
+    messagebox.showinfo("Generated", "Generated Learning goals : (" + os.path.join(exportFolder, filename) + ")")
 
 def readFile (fileName, exportFolder):
     global globalFilename
-    df = pd.read_excel(fileName, sheet_name="Review")
-    for i, j in df.iterrows():
-        columns = list(j)
-        if (pd.isna(columns[1]) == False):
-            if (columns[1].lower() == "review"):
-                generatePreview(columns, exportFolder)
-            elif (columns[1].lower() == "true or false"):
-                generateTrueFalse(columns, exportFolder)
-            elif (columns[1].lower() == "learning goal"):
-                generateLearningGoal(columns, exportFolder)
-            elif (columns[1].lower() == "mcq"):
-                genrateMCQ(columns, exportFolder)
+    comboBoxValue = comboExample.get()
+    sheetName = comboBoxValue.lower()
+    df = 0
+    try:
+        df = pd.read_excel(fileName, sheet_name=sheetName)
+    except:
+        messagebox.showerror("Error", "Please rename the sheet to process: (" + sheetName + ")")
+        return
+    if sheetName.lower() == "mcq assessment":
+        genrateMCQ(df, exportFolder)
+    else:
+        for i, j in df.iterrows():
+            columns = list(j)
+            if (pd.isna(columns[1]) == False):
+                if (columns[1].lower() == "review"):
+                    generatePreview(columns, exportFolder)
+                elif (columns[1].lower() == "true or false"):
+                    generateTrueFalse(columns, exportFolder)
+                elif (columns[1].lower() == "learning goal"):
+                    generateLearningGoal(columns, exportFolder)
+                elif (columns[1].lower() == "mcq assessment"):
+                    genrateMCQ(columns, exportFolder)
 
         
 def getExcel ():
@@ -111,17 +172,21 @@ def publish():
     if (globalFilename and exportFolder):
         readFile(globalFilename, exportFolder)
     else:
-        print("You have not selected anything")
+        messagebox.showerror("Error", "You have not selected anything")
+        
 
 def folderToExport():
     export_foler = filedialog.askdirectory()
     if (export_foler):
         global exportFolder
         exportFolder = export_foler
-    
+
+comboExample = ttk.Combobox(root, values=["REVIEW", "TRUE OR FALSE", "LEARNING GOALS", "MCQ ASSESSMENT"], state='readonly')
+comboExample.current(0)
 publishBtn = tk.Button(text="Process document", command=publish, bg="red", fg="white", font=('helvitica', 12, 'bold'))
 browseButton_Excel = tk.Button(text='Import Excel File', command=getExcel, bg='green', fg='white', font=('helvetica', 12, 'bold'))
 exportFolderBtn = tk.Button(text="Output folder", command=folderToExport, bg="gray", fg="white", font=('helvitica', 12, 'bold'))
+canvas1.create_window(150, 50, window=comboExample)
 canvas1.create_window(150, 100, window=browseButton_Excel)
 canvas1.create_window(150, 150, window=exportFolderBtn)
 canvas1.create_window(150, 200, window=publishBtn)

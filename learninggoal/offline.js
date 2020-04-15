@@ -1,5 +1,5 @@
 ﻿{
-	"version": 1585809710,
+	"version": 1586931367,
 	"fileList": [
 		"data.js",
 		"c2runtime.js",
@@ -29,6 +29,7 @@
 		"images/preview_-sheet4.png",
 		"images/bulletpoint-sheet0.png",
 		"images/rightbtn-sheet0.png",
+		"images/penicon-sheet0.png",
 		"media/completing an activity.m4a",
 		"media/completing an activity.ogg",
 		"media/menu buttons.m4a",

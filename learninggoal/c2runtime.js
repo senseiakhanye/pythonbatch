@@ -23776,6 +23776,15 @@ cr.plugins_.Tracking = function(runtime)
 		}
 		track.setAnswer(isCorrect, givenIndex, givenValue, correctValue);
 	};
+	Acts.prototype.addAnswer = function (question ,isCorrect, givenIndex, givenValue, correctValue)
+	{
+		if(track == undefined)
+		{
+			alert("You forgot to the Activity name!");
+			return;
+		}
+		track.addAnswer(question, isCorrect, givenIndex, givenValue, correctValue);
+	};
 	Acts.prototype.finishInterActive = function ()
 	{
 		if(track == undefined)
@@ -25026,16 +25035,16 @@ cr.behaviors.lunarray_LiteTween = function(runtime)
 	};
 }());
 cr.getObjectRefTable = function () { return [
+	cr.plugins_.JSONObject,
+	cr.plugins_.Function,
+	cr.plugins_.Text,
+	cr.plugins_.Tracking,
+	cr.plugins_.Touch,
+	cr.plugins_.Sprite,
 	cr.plugins_.AJAX,
 	cr.plugins_.Arr,
 	cr.plugins_.Browser,
 	cr.plugins_.Audio,
-	cr.plugins_.Function,
-	cr.plugins_.JSONObject,
-	cr.plugins_.Tracking,
-	cr.plugins_.Text,
-	cr.plugins_.Sprite,
-	cr.plugins_.Touch,
 	cr.behaviors.Pin,
 	cr.behaviors.lunarray_LiteTween,
 	cr.system_object.prototype.cnds.IsGroupActive,
@@ -25094,6 +25103,7 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Function.prototype.acts.CallFunction,
 	cr.plugins_.Sprite.prototype.cnds.IsBoolInstanceVarSet,
 	cr.behaviors.lunarray_LiteTween.prototype.acts.Reverse,
+	cr.plugins_.Text.prototype.acts.SetVisible,
 	cr.plugins_.Text.prototype.cnds.CompareInstanceVar,
 	cr.plugins_.Text.prototype.acts.Destroy,
 	cr.plugins_.Sprite.prototype.acts.Destroy,
