@@ -1,0 +1,7 @@
+For Mac
+
+Python 3.7.7 must be used
+Use brew to install python.
+pip3 to install pandas, xlrd and 
+    pip install --upgrade 'setuptools<45.0.0'
+Later version I will include the app icon, but for now yeppie it works.

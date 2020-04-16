@@ -8,6 +8,7 @@ from tkinter import filedialog
 from pandas import ExcelFile
 from tkinter import ttk
 from tkinter import messagebox
+from platform import system
 
 
 root = tk.Tk()
@@ -33,7 +34,6 @@ def getDataDirectory():
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.getcwd()
-    print(base_path)
     return base_path
 
 def genrateMCQ(df, exportFolder):
@@ -140,40 +140,58 @@ def readFile (fileName, exportFolder):
     sheetName = comboBoxValue.lower()
     df = 0
     try:
-        df = pd.read_excel(fileName, sheet_name=sheetName)
-    except:
+        df = pd.read_excel(fileName, sheetName)
+    except Exception as e:
+        print(e)
         messagebox.showerror("Error", "Please rename the sheet to process: (" + sheetName + ")")
         return
-    if sheetName.lower() == "mcq assessment":
+    # if sheetName.lower() == "mcq assessment":
+    #     genrateMCQ(df, exportFolder)
+    # else:
+    firstRowData = df.head(0)
+    headings = list(firstRowData)
+    if (headings[0].lower() == "mcq assessment"):
         genrateMCQ(df, exportFolder)
-    else:
-        for i, j in df.iterrows():
-            columns = list(j)
-            if (pd.isna(columns[1]) == False):
-                if (columns[1].lower() == "review"):
-                    generatePreview(columns, exportFolder)
-                elif (columns[1].lower() == "true or false"):
-                    generateTrueFalse(columns, exportFolder)
-                elif (columns[1].lower() == "learning goal"):
-                    generateLearningGoal(columns, exportFolder)
-                elif (columns[1].lower() == "mcq assessment"):
-                    genrateMCQ(columns, exportFolder)
+        return
+    # print(headings)
+    # print(df.head(0)[0])
+    for i, j in df.iterrows():
+        columns = list(j)
+        if (pd.isna(columns[1]) == False):
+            if (columns[1].lower() == "review"):
+                generatePreview(columns, exportFolder)
+            elif (columns[1].lower() == "true or false"):
+                generateTrueFalse(columns, exportFolder)
+            elif (columns[1].lower() == "learning goal"):
+                generateLearningGoal(columns, exportFolder)
+            elif (columns[1].lower() == "mcq assessment"):
+                genrateMCQ(columns, exportFolder)
 
         
 def getExcel ():
     import_file_path = filedialog.askopenfilename()
     if (import_file_path):
         global globalFilename
+        # global comboExample
         globalFilename = import_file_path
+        df = pd.read_excel(globalFilename, None)
+        myList = []
+        for k in df.keys():
+            myList.append(k)
+        comboExample["values"] = myList
+        comboExample.current(0)
+        canvas1.create_window(150, 100, window=comboExample)
 
 def publish():
     global globalFilename
     global exportFolder
-    if (globalFilename and exportFolder):
-        readFile(globalFilename, exportFolder)
-    else:
-        messagebox.showerror("Error", "You have not selected anything")
-        
+    if (globalFilename == ""):
+        messagebox.showerror("Error", "Please select excel file to process")
+        return
+    if (exportFolder == ""):
+        messagebox.showerror("Error", "Please select export folder")
+        return
+    readFile(globalFilename, exportFolder)
 
 def folderToExport():
     export_foler = filedialog.askdirectory()
@@ -181,14 +199,27 @@ def folderToExport():
         global exportFolder
         exportFolder = export_foler
 
-comboExample = ttk.Combobox(root, values=["REVIEW", "TRUE OR FALSE", "LEARNING GOALS", "MCQ ASSESSMENT"], state='readonly')
-comboExample.current(0)
-publishBtn = tk.Button(text="Process document", command=publish, bg="red", fg="white", font=('helvitica', 12, 'bold'))
-browseButton_Excel = tk.Button(text='Import Excel File', command=getExcel, bg='green', fg='white', font=('helvetica', 12, 'bold'))
-exportFolderBtn = tk.Button(text="Output folder", command=folderToExport, bg="gray", fg="white", font=('helvitica', 12, 'bold'))
-canvas1.create_window(150, 50, window=comboExample)
-canvas1.create_window(150, 100, window=browseButton_Excel)
+ttk.Style().configure('green/black.TLabel', foreground='green', background='black')
+ttk.Style().configure('green/black.TButton', foreground='blue', background='black')
+comboExample = ttk.Combobox(root, values=[], state='readonly')
+publishBtn = ttk.Button(text="Process document", command=publish, style="green/black.TButton")
+browseButton_Excel = ttk.Button(text='Import Excel File', command=getExcel, style="green/black.TButton")
+exportFolderBtn = ttk.Button(text="Output folder", command=folderToExport, style="green/black.TButton")
+canvas1.create_window(150, 50, window=browseButton_Excel)
+# canvas1.create_window(150, 100, window=comboExample)
 canvas1.create_window(150, 150, window=exportFolderBtn)
 canvas1.create_window(150, 200, window=publishBtn)
+
+root.title('Idea batch asset creator')
+platformD = system()
+if platformD == 'Windows':
+    iconLogo = getDataDirectory() + "/PluginIcon.ico"
+    root.iconbitmap(iconLogo)
+else:
+    iconLogo = getDataDirectory() + "/PluginIcon.png"
+    # img = tk.Image("photo", file= iconLogo)
+    # root.iconphoto(True, img) # you may also want to try this.
+    # root.tk.call('wm','iconphoto', root._w, img)
+    # print(iconLogo)
 
 root.mainloop()

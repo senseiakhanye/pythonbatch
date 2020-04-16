@@ -1,3 +1,21 @@
+# -*- mode: python ; coding: utf-8 -*-
+
+block_cipher = None
+
+
+a = Analysis(['pywindow.py'],
+             pathex=['C:\\Users\\Katleho\\Desktop\\IDEA\\coding\\pythontemplate'],
+             binaries=[],
+             datas=[],
+             hiddenimports=[],
+             hookspath=[],
+             runtime_hooks=[],
+             excludes=[],
+             win_no_prefer_redirects=False,
+             win_private_assemblies=False,
+             cipher=block_cipher,
+             noarchive=False)
+
 ##### include mydir in distribution #######
 def extra_datas(mydir):
     def rec_glob(p, files):
@@ -19,4 +37,22 @@ a.datas += extra_datas('mcq')
 a.datas += extra_datas('report')
 a.datas += extra_datas('review')
 a.datas += extra_datas('truefalse')
+a.datas += [('PluginIcon.ico', 'c:\\Users\\Katleho\\Desktop\\IDEA\\coding\\pythontemplate\\PluginIcon.ico','DATA')]
+
 ###########################################
+pyz = PYZ(a.pure, a.zipped_data,
+             cipher=block_cipher)
+exe = EXE(pyz,
+          a.scripts,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
+          [],
+          name='Idea Batch Asset Creator',
+          debug=False,
+          bootloader_ignore_signals=False,
+          strip=False,
+          upx=True,
+          upx_exclude=[],
+          runtime_tmpdir=None,
+          console=False , icon='PluginIcon.ico')

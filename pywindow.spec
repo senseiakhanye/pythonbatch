@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['pywindow.py'],
-             pathex=['C:\\Users\\Katleho\\Desktop\\IDEA\\coding\\pythontemplate'],
+             pathex=['/Users/Lee-Ann/Desktop/pythontemplate'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -36,6 +36,9 @@ a.datas += extra_datas('mcq')
 a.datas += extra_datas('report')
 a.datas += extra_datas('review')
 a.datas += extra_datas('truefalse')
+#a.datas += [('PluginIcon.ico', 'c:\\Users\\Katleho\\Desktop\\IDEA\\coding\\pythontemplate\\PluginIcon.ico','DATA')]
+a.datas += [('PluginIcon.icns', '/Users/Lee-Ann/Desktop/pythontemplate/PluginIcon.icns','DATA')]
+
 ###########################################
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
@@ -45,7 +48,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='pywindow',
+          name='Idea Batch Asset Creator',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -53,3 +56,7 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False , icon='PluginIcon.ico')
+app = BUNDLE(exe,
+             name='Idea Batch Asset Creator.app',
+             icon='PluginIcon.icns',
+             bundle_identifier=None)
