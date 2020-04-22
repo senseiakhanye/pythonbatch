@@ -1,0 +1,21 @@
+{
+    "c2JSONObject": 1,
+    "data": {
+        "title": "Societies & Culture: Great speeches - Frederick Douglass: Learning Goals",
+        "instruction": "Click on the learning goals to see what you will be able to do by the end of this topic.",
+        "subject": "English",
+        "goals": [
+            {
+                "point": "Identify how the features of purpose, language, structure, meaning & significance are used in a speech.",
+                "description": "Learn about purpose, language, structure, meaning and significance and understand how they are used to make a great speech. ",
+                "heading": "After completing this subtopic you will be able to:"
+            },
+            {
+                "point": "Examine the use of the Oratory rhetoric.",
+                "description": "Read Douglass' speech and understand how he uses the Oratory rhetoric.",
+                "heading": "After completing this subtopic you will be able to:"
+            }
+        ],
+        "active": "0"
+    }
+}
